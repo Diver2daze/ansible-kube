@@ -1,0 +1,15 @@
+- name: check cert directory exists
+  stat: path="$HOME/certs"
+  register: cert_dir
+
+- name: start deploy dashboard with certificates from Home/certs directory
+  command: "kubectl create secret generic kubernetes-dashboard-certs --from-file=$HOME/certs -n kube-system"
+  when: cert_dir.stat.exists
+
+- name: deploy dashboard with certificates from Home/certs directory
+  command: "kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml"
+  when: cert_dir.stat.exists
+
+- name: deploy kube dahsboard without certs, http only
+  command: "kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/alternative/kubernetes-dashboard.yaml"
+  when: not cert_dir.stat.exists

@@ -1,0 +1,3 @@
+- name: templetize kube yml config
+  template: src=kube_cluster_deploy.yaml.j2 dest="/Users/dmitry/kube_cluster_deploy.yaml" force=yes
+#- include: kube_dashboard.yml

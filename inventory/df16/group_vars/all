@@ -1,0 +1,8 @@
+cluster_name: mml.k8s.local
+s3_bucket: df16-mml-kubernetes
+vpc_id: vpc-7afd5502
+vpc_CIDR: 10.0.0.0/16
+zone: us-east-1f
+subnet_id: subnet-cbc3fcc7
+subnet_cidr: 10.0.0.0/24
+kubernetesVersion: 1.8.3

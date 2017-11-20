@@ -1,0 +1,83 @@
+apiVersion: kops/v1alpha2
+kind: Cluster
+metadata:
+  creationTimestamp: 2017-11-03T17:55:01Z
+  name: {{cluster_name}}
+spec:
+  api:
+    loadBalancer:
+      type: Public
+  authorization:
+    alwaysAllow: {}
+  channel: stable
+  cloudProvider: aws
+  configBase: s3://{{s3_bucket}}/{{cluster_name}}
+  etcdClusters:
+  - etcdMembers:
+    - instanceGroup: master-"{{zone}}"
+      name: f
+    name: main
+  - etcdMembers:
+    - instanceGroup: master-"{{zone}}"
+      name: f
+    name: events
+  kubernetesApiAccess:
+  - 0.0.0.0/0
+  kubernetesVersion: {{kubernetesVersion}}
+  masterInternalName: api.internal.{{cluster_name}}
+  masterPublicName: api.{{cluster_name}}
+  networkCIDR: {{vpc_CIDR}}
+  networkID: {{vpc_id}}
+  networking:
+    weave:
+      mtu: 8912
+  nonMasqueradeCIDR: 100.64.0.0/10
+  sshAccess:
+  - 0.0.0.0/0
+  subnets:
+  - cidr: {{subnet_cidr}}
+    id: {{subnet_id}}
+    name: {{zone}}
+    type: Public
+    zone: {{zone}}
+  topology:
+    dns:
+      type: Public
+    masters: public
+    nodes: public
+
+---
+
+apiVersion: kops/v1alpha2
+kind: InstanceGroup
+metadata:
+  creationTimestamp: 2017-11-03T17:55:01Z
+  labels:
+    kops.k8s.io/cluster: {{cluster_name}}
+  name: master-{{zone}}
+spec:
+  image: kope.io/k8s-1.7-debian-jessie-amd64-hvm-ebs-2017-07-28
+  machineType: t2.medium
+  maxSize: 3
+  minSize: 3
+  role: Master
+  subnets:
+  - {{zone}}
+
+---
+
+apiVersion: kops/v1alpha2
+kind: InstanceGroup
+metadata:
+  creationTimestamp: 2017-11-03T17:55:01Z
+  labels:
+    kops.k8s.io/cluster: {{cluster_name}}
+  name: nodes
+spec:
+  image: kope.io/k8s-1.7-debian-jessie-amd64-hvm-ebs-2017-07-28
+  machineType: m4.2xlarge
+  maxSize: 4
+  minSize: 4
+  role: Node
+  subnets:
+  - {{zone}}
